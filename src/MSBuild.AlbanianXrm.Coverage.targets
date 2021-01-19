@@ -15,22 +15,34 @@
       >2.4.1</AlbanianXrm-Coverage-XUnitVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OpenCover" Version="$(AlbanianXrm-Coverage-OpenCoverVersion)" Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'OpenCover'))!=True">
+    <PackageReference 
+      Include="OpenCover" 
+      Version="$(AlbanianXrm-Coverage-OpenCoverVersion)" 
+      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'OpenCover'))!=True">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="ReportGenerator" Version="$(AlbanianXrm-Coverage-ReportGeneratorVersion)" Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'ReportGenerator'))!=True">
+    <PackageReference 
+      Include="ReportGenerator" 
+      Version="$(AlbanianXrm-Coverage-ReportGeneratorVersion)" 
+      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'ReportGenerator'))!=True">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.runner.console" Version="$(AlbanianXrm-Coverage-XUnitVersion)" Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'xunit.runner.console'))!=True">
+    <PackageReference 
+      Include="xunit.runner.console" 
+      Version="$(AlbanianXrm-Coverage-XUnitVersion)" 
+      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'xunit.runner.console'))!=True">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
-    <PackageReference Update="OpenCover;ReportGenerator;xunit.runner.console" GeneratePathProperty="True" />
+    <PackageReference 
+      Update="OpenCover;ReportGenerator;xunit.runner.console" 
+      GeneratePathProperty="True" 
+      />
   </ItemGroup>
   <Target
     Name="AlbanianXrm-Coverage"
@@ -39,22 +51,44 @@
     Condition="'$(AlbanianXrm-Coverage-Enable)'=='True'"
     >
     <ItemGroup>
-      <ProjectReference Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))">
+      <ProjectReference 
+        Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))"
+        >
         <ProjectBeingTested>$([System.String]::Copy('%(Filename)').Substring(0, $([System.String]::Copy('%(Filename)').LastIndexOf('.Test'))))</ProjectBeingTested>
         <_ResolvedProjectReferencePaths>@(_ResolvedProjectReferencePaths)</_ResolvedProjectReferencePaths>
       </ProjectReference>
+
+      <_AlbanianXrm-Coverage-Output
+        Condition="$([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Test')) OR $([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Tests'))"
+        Include="$(OutDir)%(FileName).Coverage.xml" 
+        />
     </ItemGroup>
 
     <PropertyGroup>
-      <AlbanianXrm-Coverage-ReportGenerator Condition="'$(AlbanianXrm-Coverage-ReportGenerator)'==''">$(PkgReportGenerator)\tools\net47\ReportGenerator.exe</AlbanianXrm-Coverage-ReportGenerator>
-      <AlbanianXrm-Coverage-OpenCover Condition="'$(AlbanianXrm-Coverage-OpenCover)'==''">$(PkgOpenCover)\tools\OpenCover.Console.exe</AlbanianXrm-Coverage-OpenCover>
-      <AlbanianXrm-Coverage-OpenCover-Register Condition="'$(AlbanianXrm-Coverage-OpenCover-Register)'==''">-register:Path64</AlbanianXrm-Coverage-OpenCover-Register>
-      <AlbanianXrm-Coverage-XUnit Condition="'$(AlbanianXrm-Coverage-XUnit)'==''">$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe</AlbanianXrm-Coverage-XUnit>
-      <AlbanianXrm-Coverage-Reports Condition="'$(AlbanianXrm-Coverage-Reports)'==''">Html;Cobertura</AlbanianXrm-Coverage-Reports>
-      <AlbanianXrm-Coverage-TargetDir Condition="'$(AlbanianXrm-Coverage-TargetDir)'==''">$(TargetDir)CoverageReport</AlbanianXrm-Coverage-TargetDir>
-      <_AlbanianXrm-Coverage-Output Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))">@(ProjectReference->'$(OutDir)%(Filename).Coverage.xml')</_AlbanianXrm-Coverage-Output>
+      <AlbanianXrm-Coverage-ReportGenerator 
+        Condition="'$(AlbanianXrm-Coverage-ReportGenerator)'==''"
+        >$(PkgReportGenerator)\tools\net47\ReportGenerator.exe</AlbanianXrm-Coverage-ReportGenerator>
+      <AlbanianXrm-Coverage-OpenCover 
+        Condition="'$(AlbanianXrm-Coverage-OpenCover)'==''"
+        >$(PkgOpenCover)\tools\OpenCover.Console.exe</AlbanianXrm-Coverage-OpenCover>
+      <AlbanianXrm-Coverage-OpenCover-Register 
+        Condition="'$(AlbanianXrm-Coverage-OpenCover-Register)'==''"
+        >-register:Path64</AlbanianXrm-Coverage-OpenCover-Register>
+      <AlbanianXrm-Coverage-XUnit 
+        Condition="'$(AlbanianXrm-Coverage-XUnit)'==''"
+        >$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe</AlbanianXrm-Coverage-XUnit>
+      <AlbanianXrm-Coverage-Reports 
+        Condition="'$(AlbanianXrm-Coverage-Reports)'==''"
+        >Html;Cobertura</AlbanianXrm-Coverage-Reports>
+      <AlbanianXrm-Coverage-TargetDir 
+        Condition="'$(AlbanianXrm-Coverage-TargetDir)'==''"
+        >$(TargetDir)CoverageReport</AlbanianXrm-Coverage-TargetDir>
     </PropertyGroup>
-    <Error Condition="'$(_AlbanianXrm-Coverage-Output)'==''" Code="ALBXRMCOV1" Text="No test projects have been configured as Project Reference" />
+    <Error 
+      Condition="'@(_AlbanianXrm-Coverage-Output)'==''" 
+      Code="ALBXRMCOV1" 
+      Text="No test projects have been configured as Project Reference" 
+      />
     <Exec
       Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))"
       Command="
@@ -68,7 +102,7 @@
     <Exec
       Command="
         &quot;$(AlbanianXrm-Coverage-ReportGenerator)&quot; ^
-        -reports:&quot;$(_AlbanianXrm-Coverage-Output)&quot; ^
+        -reports:&quot;@(_AlbanianXrm-Coverage-Output)&quot; ^
         -targetdir:&quot;$(AlbanianXrm-Coverage-TargetDir)&quot; ^
         -reporttypes:&quot;$(AlbanianXrm-Coverage-Reports)&quot;"
     />

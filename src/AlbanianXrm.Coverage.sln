@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09D57207-913C-43CD-8806-BEC46CC39246}"
+	ProjectSection(SolutionItems) = preProject
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		..\Logo.svg = ..\Logo.svg
+		..\Logo_80x80.png = ..\Logo_80x80.png
+		MSBuild.AlbanianXrm.Coverage.nuspec = MSBuild.AlbanianXrm.Coverage.nuspec
+		MSBuild.AlbanianXrm.Coverage.targets = MSBuild.AlbanianXrm.Coverage.targets
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {48A4D33D-D45E-46BA-868E-4BB3472C6BF5}
+	EndGlobalSection
+EndGlobal

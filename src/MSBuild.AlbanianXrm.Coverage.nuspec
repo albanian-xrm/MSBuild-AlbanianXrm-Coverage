@@ -14,6 +14,11 @@
     <iconUrl>https://raw.githubusercontent.com/albanian-xrm/MSBuild-AlbanianXrm-Coverage/master/Logo_80x80.png</iconUrl>
 	  <license type="expression">MIT</license>	
     <tags>MSBuild XUnit OpenCover ReportGenerator</tags>
+    <dependencies>
+      <dependency id="OpenCover" version="4.7.922" />
+      <dependency id="ReportGenerator" version="4.8.4" />
+      <dependency id="xunit.runner.console" version="2.4.1" />
+    </dependencies>
   </metadata>
   <files>
     <file src="MSBuild.AlbanianXrm.Coverage.targets" target="build\MSBuild.AlbanianXrm.Coverage.targets" />

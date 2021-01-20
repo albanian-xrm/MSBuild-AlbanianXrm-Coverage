@@ -50,6 +50,11 @@
     DependsOnTargets="ResolveProjectReferences"
     Condition="'$(AlbanianXrm-Coverage-Enable)'=='True'"
     >
+    <PropertyGroup>
+      <Pkgxunit_runner_console Condition="'$(Pkgxunit_runner_console)'==''">$(NuGetPackageRoot)xunit.runner.console\$(AlbanianXrm-Coverage-XUnitVersion)</Pkgxunit_runner_console>
+      <PkgOpenCover Condition="'$(PkgOpenCover)'==''">$(NuGetPackageRoot)OpenCover\$(AlbanianXrm-Coverage-OpenCoverVersion)</PkgOpenCover>
+      <PkgReportGenerator Condition="'$(PkgReportGenerator)'==''">$(NuGetPackageRoot)OpenCover\$(AlbanianXrm-Coverage-ReportGeneratorVersion)</PkgReportGenerator>
+    </PropertyGroup>
     <ItemGroup>
       <ProjectReference 
         Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))"

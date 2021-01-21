@@ -86,6 +86,24 @@
         <_ResolvedProjectReferencePaths>@(_ResolvedProjectReferencePaths)</_ResolvedProjectReferencePaths>
       </ProjectReference>
 
+      <ProjectReference
+        Condition="'%(ProjectReference.AlbanianXrm-Coverage-Filter)'!=''"
+        >
+        <AlbanianXrm-Coverage-Filter>-filter:&quot;%(ProjectReference.AlbanianXrm-Coverage-Filter)&quot;</AlbanianXrm-Coverage-Filter>
+      </ProjectReference>
+
+      <ProjectReference
+        Condition="'%(ProjectReference.AlbanianXrm-Coverage-Filter)'==''"
+        >
+        <AlbanianXrm-Coverage-Filter>-filter:&quot;+[%(ProjectReference.ProjectBeingTested)]* -[%(ProjectReference.FileName)]*&quot;</AlbanianXrm-Coverage-Filter>
+      </ProjectReference>
+
+      <ProjectReference
+          Condition="'%(ProjectReference.AlbanianXrm-Coverage-ExcludeByAttribute)'!=''"
+        >
+        <AlbanianXrm-Coverage-ExcludeByAttribute>-excludebyattribute:%(ProjectReference.AlbanianXrm-Coverage-ExcludeByAttribute)</AlbanianXrm-Coverage-ExcludeByAttribute>
+      </ProjectReference>
+
       <_AlbanianXrm-Coverage-Output
         Condition="$([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Test')) OR $([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Tests'))"
         Include="$(OutDir)%(FileName).Coverage.xml"
@@ -125,7 +143,8 @@
         -targetargs:&quot;&quot;&quot;%(ProjectReference._ResolvedProjectReferencePaths)&quot;&quot; -noshadow&quot; ^
         -output:&quot;$(OutDir)%(ProjectReference.FileName).Coverage.xml&quot; ^
         $(AlbanianXrm-Coverage-OpenCover-Register) ^
-        -filter:&quot;+[%(ProjectReference.ProjectBeingTested)]* -[%(ProjectReference.FileName)]*&quot;"
+        %(ProjectReference.AlbanianXrm-Coverage-Filter) ^
+        %(ProjectReference.AlbanianXrm-Coverage-ExcludeByAttribute)"
     />
     <Exec
       Command="

@@ -4,44 +4,11 @@
     <AlbanianXrm-Coverage-Enable
       Condition="$(AlbanianXrm-Coverage-Enable)=='' AND '$(Configuration)'=='Debug'"
       >True</AlbanianXrm-Coverage-Enable>
-    <AlbanianXrm-Coverage-OpenCoverVersion
-      Condition="'$(AlbanianXrm-Coverage-OpenCoverVersion)'==''"
-      >4.7.922</AlbanianXrm-Coverage-OpenCoverVersion>
-    <AlbanianXrm-Coverage-ReportGeneratorVersion
-      Condition="'$(AlbanianXrm-Coverage-ReportGeneratorVersion)'==''"
-      >4.8.4</AlbanianXrm-Coverage-ReportGeneratorVersion>
-    <AlbanianXrm-Coverage-XUnitVersion
-      Condition="'$(AlbanianXrm-Coverage-XUnitVersion)'==''"
-      >2.4.1</AlbanianXrm-Coverage-XUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference
-      Include="OpenCover"
-      Version="$(AlbanianXrm-Coverage-OpenCoverVersion)"
-      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'OpenCover'))!=True AND '$(NuGetPackageRoot)'!=''">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </PackageReference>
-    <PackageReference
-      Include="ReportGenerator"
-      Version="$(AlbanianXrm-Coverage-ReportGeneratorVersion)"
-      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'ReportGenerator'))!=True AND '$(NuGetPackageRoot)'!=''">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </PackageReference>
-    <PackageReference
-      Include="xunit.runner.console"
-      Version="$(AlbanianXrm-Coverage-XUnitVersion)"
-      Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'xunit.runner.console'))!=True AND '$(NuGetPackageRoot)'!=''">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </PackageReference>
-    <PackageReference
       Update="OpenCover;ReportGenerator;xunit.runner.console"
-	    Condition="'$(NuGetPackageRoot)'!=''"
+	    Condition="!Exists('packages.config')"
       GeneratePathProperty="True"
       />
   </ItemGroup>
@@ -51,8 +18,36 @@
     DependsOnTargets="ResolveProjectReferences"
     Condition="'$(AlbanianXrm-Coverage-Enable)'=='True'"
     >
+    <!--If using packages.config get versions for OpenCover, ReportGenerator and xunit.runner.console-->
+    <XmlPeek 
+      Condition="Exists('packages.config')" 
+      XmlInputPath="packages.config"
+      Query="//package[@id='xunit.runner.console']/@version"
+      >
+      <Output 
+        TaskParameter="Result" 
+        PropertyName="AlbanianXrm-Coverage-XUnitVersion" 
+        />
+    </XmlPeek>
+    <XmlPeek 
+      Condition="Exists('packages.config')" 
+      XmlInputPath="packages.config"
+      Query="//package[@id='OpenCover']/@version">
+      <Output 
+        TaskParameter="Result" 
+        PropertyName="AlbanianXrm-Coverage-OpenCoverVersion" />
+    </XmlPeek>
+    <XmlPeek
+    Condition="Exists('packages.config')"
+    XmlInputPath="packages.config"
+    Query="//package[@id='ReportGenerator']/@version">
+      <Output
+        TaskParameter="Result"
+        PropertyName="AlbanianXrm-Coverage-ReportGeneratorVersion" />
+    </XmlPeek>   
+    <!--If using package references-->
     <PropertyGroup
-		   Condition="'$(NuGetPackageRoot)'!=''"
+		   Condition="!Exists('packages.config')"
 		   >
       <Pkgxunit_runner_console
 		    Condition="'$(Pkgxunit_runner_console)'==''"
@@ -64,10 +59,11 @@
 		    Condition="'$(PkgReportGenerator)'==''"
 		    >$(NuGetPackageRoot)ReportGenerator\$(AlbanianXrm-Coverage-ReportGeneratorVersion)</PkgReportGenerator>
     </PropertyGroup>
+    <!--If using packages.config-->
     <PropertyGroup
-      Condition="'$(NuGetPackageRoot)'==''"
+      Condition="Exists('packages.config')"
 		>
-      <NuGetPackageRoot>$([System.IO.Path]::GetFullPath('..\packages\'))</NuGetPackageRoot>
+      <NuGetPackageRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\'))</NuGetPackageRoot>
       <Pkgxunit_runner_console
         Condition="'$(Pkgxunit_runner_console)'==''"
 			  >$(NuGetPackageRoot)xunit.runner.console.$(AlbanianXrm-Coverage-XUnitVersion)</Pkgxunit_runner_console>
@@ -78,11 +74,18 @@
         Condition="'$(PkgReportGenerator)'==''"
 			  >$(NuGetPackageRoot)ReportGenerator.$(AlbanianXrm-Coverage-ReportGeneratorVersion)</PkgReportGenerator>
     </PropertyGroup>
+
+    <Error
+     Condition="Exists('$(Pkgxunit_runner_console)')==False"
+     Code="ALBXRMCOV2"
+     Text="Could not find xunit.runner.console version '$(AlbanianXrm-Coverage-XUnitVersion)'. Make sure it is referenced by the coverage project. Or use AlbanianXrm-Coverage-XUnitVersion property to specify a diferent version."
+      />
+    
     <ItemGroup>
       <ProjectReference
-        Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))"
+     Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests')) OR '%(ProjectReference.ProjectBeingTested)'!=''"
         >
-        <ProjectBeingTested>$([System.String]::Copy('%(Filename)').Substring(0, $([System.String]::Copy('%(Filename)').LastIndexOf('.Test'))))</ProjectBeingTested>
+        <ProjectBeingTested Condition="'%(ProjectReference.ProjectBeingTested)'==''">$([System.String]::Copy('%(Filename)').Substring(0, $([System.String]::Copy('%(Filename)').LastIndexOf('.'))))</ProjectBeingTested>
         <_ResolvedProjectReferencePaths>@(_ResolvedProjectReferencePaths)</_ResolvedProjectReferencePaths>
       </ProjectReference>
 
@@ -105,7 +108,7 @@
       </ProjectReference>
 
       <_AlbanianXrm-Coverage-Output
-        Condition="$([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Test')) OR $([System.String]::Copy('%(ProjectReference.FileName)').EndsWith('.Tests'))"
+        Condition="'%(ProjectBeingTested)'!=''"
         Include="$(OutDir)%(FileName).Coverage.xml"
         />
     </ItemGroup>
@@ -136,7 +139,7 @@
       Text="No test projects have been configured as Project Reference"
       />
     <Exec
-      Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))"
+      Condition="'%(ProjectBeingTested)'!=''"
       Command="
         &quot;$(AlbanianXrm-Coverage-OpenCover)&quot; ^
         -target:&quot;$(AlbanianXrm-Coverage-XUnit)&quot; ^

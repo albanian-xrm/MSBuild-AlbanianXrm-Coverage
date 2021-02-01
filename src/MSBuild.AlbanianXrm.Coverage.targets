@@ -108,7 +108,7 @@
       </ProjectReference>
 
       <_AlbanianXrm-Coverage-Output
-        Condition="'%(ProjectBeingTested)'!=''"
+        Condition="'%(ProjectReference.ProjectBeingTested)'!=''"
         Include="$(OutDir)%(FileName).Coverage.xml"
         />
     </ItemGroup>

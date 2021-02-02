@@ -86,7 +86,7 @@
      Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests')) OR '%(ProjectReference.ProjectBeingTested)'!=''"
         >
         <ProjectBeingTested Condition="'%(ProjectReference.ProjectBeingTested)'==''">$([System.String]::Copy('%(Filename)').Substring(0, $([System.String]::Copy('%(Filename)').LastIndexOf('.'))))</ProjectBeingTested>
-        <_ResolvedProjectReferencePaths>@(_ResolvedProjectReferencePaths)</_ResolvedProjectReferencePaths>
+        <_ResolvedProjectReferencePaths Condition="'%(ProjectReference._ResolvedProjectReferencePaths)'==''">@(_ResolvedProjectReferencePaths)</_ResolvedProjectReferencePaths>
       </ProjectReference>
 
       <ProjectReference
@@ -139,7 +139,7 @@
       Text="No test projects have been configured as Project Reference"
       />
     <Exec
-      Condition="'%(ProjectBeingTested)'!=''"
+      Condition="'%(ProjectReference.ProjectBeingTested)'!=''"
       Command="
         &quot;$(AlbanianXrm-Coverage-OpenCover)&quot; ^
         -target:&quot;$(AlbanianXrm-Coverage-XUnit)&quot; ^
